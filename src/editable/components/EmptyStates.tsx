@@ -11,20 +11,20 @@ type EmptyStateProps = {
 }
 
 export function EmptyState({
-  title = 'Nothing published here yet',
+  title = 'Nothing is published here yet',
   description = 'Fresh posts will appear here automatically once this section has published content.',
   actionLabel = 'Back to home',
   actionHref = '/',
   className,
 }: EmptyStateProps) {
   return (
-    <section className={cn('rounded-[2rem] border border-current/10 bg-current/[0.03] p-8 text-center', className)}>
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-current/10">
-        <SearchX className="h-6 w-6" />
+    <section className={cn('rounded-[2rem] border border-[var(--slot4-line)] bg-white/80 p-10 text-center shadow-[0_18px_48px_rgba(18,27,52,0.06)]', className)}>
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--slot4-accent-soft)] text-[var(--slot4-accent-fill)]">
+        <SearchX className="h-7 w-7" />
       </div>
-      <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em]">{title}</h2>
-      <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-current/65">{description}</p>
-      <Link href={actionHref} className="mt-6 inline-flex items-center gap-2 rounded-full border border-current/15 px-5 py-3 text-sm font-semibold transition hover:bg-current hover:text-background">
+      <h2 className="mt-6 text-3xl font-black tracking-[-0.05em] text-[var(--slot4-page-text)]">{title}</h2>
+      <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-[var(--slot4-muted-text)]">{description}</p>
+      <Link href={actionHref} className="mt-7 inline-flex items-center gap-2 rounded-full bg-[var(--slot4-accent-fill)] px-6 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(53,133,142,0.28)]">
         {actionLabel}
         <ArrowRight className="h-4 w-4" />
       </Link>
@@ -37,8 +37,8 @@ export function TaskEmptyState({ taskLabel = 'posts', className }: { taskLabel?:
     <EmptyState
       className={className}
       title={`No ${taskLabel} available yet`}
-      description={`Published ${taskLabel} from the master panel will appear here automatically. The page layout stays ready even when the feed is empty.`}
-      actionLabel="Explore the site"
+      description={`Published ${taskLabel} will appear here automatically as new content is added to the site.`}
+      actionLabel="Explore the homepage"
       actionHref="/"
     />
   )
