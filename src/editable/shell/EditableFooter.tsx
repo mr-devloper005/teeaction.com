@@ -24,11 +24,7 @@ export function EditableFooter() {
                 <span className="text-[2rem] font-black leading-none tracking-[-0.08em] text-white">
                   {globalContent.site.name}
                 </span>
-                {globalContent.footer.tagline ? (
-                  <span className="mt-1 text-[11px] font-black uppercase tracking-[0.24em] text-white/55">
-                    {globalContent.footer.tagline}
-                  </span>
-                ) : null}
+                
               </span>
             </Link>
             <p className="mt-6 max-w-md text-base leading-8 text-white/70">{globalContent.footer.description}</p>
