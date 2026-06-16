@@ -2,13 +2,15 @@
 
 import { useMemo, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
-import { LogIn, Menu, UserPlus, X } from 'lucide-react'
+import { LogIn, LogOut, Menu, PenSquare, UserPlus, X } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/site-config'
+import { useEditableLocalAuthSession } from '@/editable/components/EditableLocalAuthForms'
 import { globalContent } from '@/editable/content/global.content'
 import { getVisualPreset, visualSystem } from '@/editable/theme/visual-system'
 
 export function EditableNavbar() {
   const preset = getVisualPreset(visualSystem.recommendedPreset as any)
+  const { session, logout } = useEditableLocalAuthSession()
   const [open, setOpen] = useState(false)
   const navVars = {
     '--editable-nav-bg': preset.colors.background,
@@ -64,12 +66,25 @@ export function EditableNavbar() {
         </div>
 
         <div className="ml-auto hidden items-center gap-3 sm:flex">
-          <Link href="/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black hover:text-[var(--slot4-accent-fill)]">
-            <LogIn className="h-4 w-4" /> Login
-          </Link>
-          <Link href="/signup" className="inline-flex items-center gap-2 rounded-full bg-[var(--slot4-accent-fill)] px-6 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(53,133,142,0.28)]">
-            <UserPlus className="h-4 w-4" /> Get Started
-          </Link>
+          {session ? (
+            <>
+              <Link href="/create" className="inline-flex items-center gap-2 rounded-full bg-[var(--slot4-accent-fill)] px-6 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(53,133,142,0.28)]">
+                <PenSquare className="h-4 w-4" /> Workspace
+              </Link>
+              <button type="button" onClick={logout} className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black hover:text-[var(--slot4-accent-fill)]">
+                <LogOut className="h-4 w-4" /> Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black hover:text-[var(--slot4-accent-fill)]">
+                <LogIn className="h-4 w-4" /> Login
+              </Link>
+              <Link href="/signup" className="inline-flex items-center gap-2 rounded-full bg-[var(--slot4-accent-fill)] px-6 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(53,133,142,0.28)]">
+                <UserPlus className="h-4 w-4" /> Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         <button type="button" onClick={() => setOpen((value) => !value)} className="rounded-full border border-[var(--editable-border)] bg-white p-2.5 lg:hidden" aria-label="Toggle menu">
@@ -80,11 +95,16 @@ export function EditableNavbar() {
       {open ? (
         <div className="border-t border-[var(--editable-border)] bg-white px-4 py-4 lg:hidden">
           <div className="grid gap-2">
-            {[{ label: 'Home', href: '/' }, ...primaryNav, { label: 'Login', href: '/login' }, { label: 'Sign up', href: '/signup' }].map((item) => (
+            {[{ label: 'Home', href: '/' }, ...primaryNav, ...(session ? [{ label: 'Workspace', href: '/create' }] : [{ label: 'Login', href: '/login' }, { label: 'Sign up', href: '/signup' }])].map((item) => (
               <Link key={`${item.href}-${item.label}`} href={item.href} onClick={() => setOpen(false)} className="rounded-[1.25rem] border border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] px-4 py-3 text-sm font-black">
                 {item.label}
               </Link>
             ))}
+            {session ? (
+              <button type="button" onClick={() => { logout(); setOpen(false) }} className="rounded-[1.25rem] border border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] px-4 py-3 text-left text-sm font-black">
+                Logout
+              </button>
+            ) : null}
           </div>
         </div>
       ) : null}

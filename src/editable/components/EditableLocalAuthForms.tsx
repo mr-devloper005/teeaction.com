@@ -53,7 +53,7 @@ export function EditableLocalLoginForm() {
     saveSession(user)
     setStatus('success')
     setMessage(pagesContent.auth.login.success)
-    window.setTimeout(() => router.push('/'), 500)
+    window.setTimeout(() => router.push('/create'), 500)
   }
 
   return (
@@ -94,7 +94,7 @@ export function EditableLocalSignupForm() {
     saveSession(nextUser)
     setStatus('success')
     setMessage(pagesContent.auth.signup.success)
-    window.setTimeout(() => router.push('/'), 500)
+    window.setTimeout(() => router.push('/create'), 500)
   }
 
   return (
