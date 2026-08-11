@@ -24,14 +24,6 @@ function safePosts(posts: SitePost[]) {
   return posts.filter(Boolean).slice(0, 24)
 }
 
-function formatMetric(index: number) {
-  return ['45K+', '850+', '98%', '3.5x'][index] || `${(index + 1) * 10}+`
-}
-
-function metricLabel(index: number) {
-  return ['Saved pages indexed', 'Collections explored', 'Reader return rate', 'Discovery momentum'][index] || 'Active readers'
-}
-
 function featureCopy(post?: SitePost, fallback = 'Freshly curated resources appear here every time the feed updates.') {
   return post ? getEditableExcerpt(post, 148) || fallback : fallback
 }
@@ -113,7 +105,7 @@ function ImageFirstCard({ post, href }: { post: SitePost; href: string }) {
   )
 }
 
-export function EditableHomeHero({ primaryTask, primaryRoute, posts }: HomeSectionProps) {
+export function EditableHomeHero({ primaryTask: _primaryTask, primaryRoute, posts }: HomeSectionProps) {
   const lead = safePosts(posts)[0]
   const side = safePosts(posts)[1]
 
@@ -180,7 +172,7 @@ export function EditableHomeHero({ primaryTask, primaryRoute, posts }: HomeSecti
   )
 }
 
-export function EditableStoryRail({ primaryTask, primaryRoute, posts }: HomeSectionProps) {
+export function EditableStoryRail({ primaryTask: _primaryTask, primaryRoute: _primaryRoute, posts }: HomeSectionProps) {
   const items = safePosts(posts)
   const servicePosts = items.slice(0, 6)
 
@@ -221,17 +213,6 @@ export function EditableMagazineSplit({ primaryTask, primaryRoute, posts }: Home
 
   return (
     <>
-      <section className="bg-[var(--slot4-dark-bg)] text-white">
-        <div className={`${dc.shell.section} grid gap-8 py-12 md:grid-cols-2 xl:grid-cols-4`}>
-          {[0, 1, 2, 3].map((index) => (
-            <div key={index} className="text-center">
-              <p className="text-6xl font-black leading-none tracking-[-0.06em]">{formatMetric(index)}</p>
-              <p className="mt-3 text-sm font-black uppercase tracking-[0.26em] text-[var(--slot4-accent-fill)]">{metricLabel(index)}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section id="process" className="bg-[#f7faf5]">
         <div className={`${dc.shell.section} py-20`}>
           <div className="mx-auto max-w-4xl text-center">

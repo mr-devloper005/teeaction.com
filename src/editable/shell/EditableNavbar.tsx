@@ -1,110 +1,101 @@
 'use client'
 
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { LogIn, LogOut, Menu, PenSquare, UserPlus, X } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { LogIn, LogOut, Menu, PenSquare, Search, UserPlus, X } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/site-config'
 import { useEditableLocalAuthSession } from '@/editable/components/EditableLocalAuthForms'
 import { globalContent } from '@/editable/content/global.content'
-import { getVisualPreset, visualSystem } from '@/editable/theme/visual-system'
 
 export function EditableNavbar() {
-  const preset = getVisualPreset(visualSystem.recommendedPreset as any)
   const { session, logout } = useEditableLocalAuthSession()
   const [open, setOpen] = useState(false)
-  const navVars = {
-    '--editable-nav-bg': preset.colors.background,
-    '--editable-nav-text': preset.colors.foreground,
-    '--editable-nav-active': preset.colors.accent,
-    '--editable-nav-active-text': '#ffffff',
-    '--editable-border': 'var(--slot4-line)',
-    '--editable-container': '1280px',
-  } as CSSProperties
+  const pathname = usePathname()
 
-  const taskLinks = useMemo(
-    () => SITE_CONFIG.tasks.filter((task) => task.enabled).slice(0, 3).map((task) => ({ label: task.label, href: task.route })),
+  const navItems = useMemo(
+    () => [
+      { label: 'Home', href: '/' },
+      ...SITE_CONFIG.tasks.filter((t) => t.enabled).slice(0, 3).map((t) => ({ label: t.label, href: t.route })),
+      { label: 'Contact', href: '/contact' },
+    ],
     []
   )
-  const sectionLinks: Array<{ label: string; href: string }> = [...globalContent.nav.sectionLinks]
 
-  const primaryNav = [
-    ...sectionLinks,
-    ...taskLinks.filter((item) => !sectionLinks.some((link) => link.href === item.href)),
-  ].slice(0, 5)
+  const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
 
   return (
-    <header style={navVars} className="sticky top-0 z-50 border-b border-[var(--editable-border)] bg-white/95 text-[var(--editable-nav-text)] backdrop-blur-xl">
-      <nav className="mx-auto flex min-h-[88px] w-full max-w-[var(--editable-container)] items-center gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex min-w-0 shrink-0 items-center gap-3">
-          <img
-            src="/favicon.png"
-            alt={globalContent.site.name}
-            className="h-12 w-auto max-w-[72px] object-contain sm:h-14 sm:max-w-[84px]"
-          />
-          <span className="min-w-0 flex flex-col">
-            <span className="block truncate text-xl font-black leading-none tracking-[-0.06em] text-[var(--slot4-page-text)] sm:text-2xl">
-              {globalContent.site.name}
-            </span>
-            {globalContent.nav.tagline ? (
-              <span className="hidden truncate text-[11px] font-black uppercase tracking-[0.28em] text-[var(--slot4-muted-text)] md:block">
-                {globalContent.nav.tagline}
-              </span>
-            ) : null}
-          </span>
+    <header className="sticky top-0 z-50 bg-[#121b34]">
+      <nav className="mx-auto flex h-[72px] max-w-[1280px] items-center gap-6 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          <img src="/favicon.png" alt={globalContent.site.name} className="h-9 w-9 object-contain" />
+          <span className="text-lg font-black tracking-[-0.04em] text-white">{globalContent.site.name}</span>
         </Link>
 
-        <div className="ml-auto hidden items-center gap-8 lg:flex">
-          {primaryNav.map((item) => (
+        <div className="hidden items-center gap-1 lg:flex">
+          {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-bold text-[var(--slot4-page-text)] transition hover:text-[var(--slot4-accent-fill)]"
+              className={`rounded-lg px-3.5 py-2 text-[13px] font-semibold transition ${isActive(item.href) ? 'bg-white/12 text-white' : 'text-white/65 hover:text-white'}`}
             >
               {item.label}
             </Link>
           ))}
         </div>
 
-        <div className="ml-auto hidden items-center gap-3 sm:flex">
+        <div className="ml-auto hidden items-center gap-2 sm:flex">
+          <Link href="/search" className="rounded-lg p-2.5 text-white/50 transition hover:bg-white/8 hover:text-white" aria-label="Search">
+            <Search className="h-4 w-4" />
+          </Link>
           {session ? (
             <>
-              <Link href="/create" className="inline-flex items-center gap-2 rounded-full bg-[var(--slot4-accent-fill)] px-6 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(53,133,142,0.28)]">
-                <PenSquare className="h-4 w-4" /> Workspace
+              <Link href="/create" className="inline-flex items-center gap-2 rounded-lg bg-[#35858E] px-4 py-2 text-[13px] font-bold text-white transition hover:bg-[#2d737b]">
+                <PenSquare className="h-3.5 w-3.5" /> Create
               </Link>
-              <button type="button" onClick={logout} className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black hover:text-[var(--slot4-accent-fill)]">
-                <LogOut className="h-4 w-4" /> Logout
+              <button type="button" onClick={logout} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-semibold text-white/60 transition hover:text-white">
+                <LogOut className="h-3.5 w-3.5" /> Logout
               </button>
             </>
           ) : (
             <>
-              <Link href="/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black hover:text-[var(--slot4-accent-fill)]">
-                <LogIn className="h-4 w-4" /> Login
+              <Link href="/login" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-semibold text-white/60 transition hover:text-white">
+                <LogIn className="h-3.5 w-3.5" /> Login
               </Link>
-              <Link href="/signup" className="inline-flex items-center gap-2 rounded-full bg-[var(--slot4-accent-fill)] px-6 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(53,133,142,0.28)]">
-                <UserPlus className="h-4 w-4" /> Get Started
+              <Link href="/signup" className="inline-flex items-center gap-1.5 rounded-lg bg-[#35858E] px-4 py-2 text-[13px] font-bold text-white transition hover:bg-[#2d737b]">
+                <UserPlus className="h-3.5 w-3.5" /> Sign up
               </Link>
             </>
           )}
         </div>
 
-        <button type="button" onClick={() => setOpen((value) => !value)} className="rounded-full border border-[var(--editable-border)] bg-white p-2.5 lg:hidden" aria-label="Toggle menu">
+        <button type="button" onClick={() => setOpen((v) => !v)} className="ml-auto rounded-lg border border-white/12 p-2 text-white/70 lg:hidden" aria-label="Toggle menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </nav>
 
       {open ? (
-        <div className="border-t border-[var(--editable-border)] bg-white px-4 py-4 lg:hidden">
-          <div className="grid gap-2">
-            {[{ label: 'Home', href: '/' }, ...primaryNav, ...(session ? [{ label: 'Workspace', href: '/create' }] : [{ label: 'Login', href: '/login' }, { label: 'Sign up', href: '/signup' }])].map((item) => (
-              <Link key={`${item.href}-${item.label}`} href={item.href} onClick={() => setOpen(false)} className="rounded-[1.25rem] border border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] px-4 py-3 text-sm font-black">
+        <div className="border-t border-white/8 bg-[#121b34] px-4 pb-5 pt-3 lg:hidden">
+          <div className="grid gap-1">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${isActive(item.href) ? 'bg-white/10 text-white' : 'text-white/65'}`}>
                 {item.label}
               </Link>
             ))}
+            <Link href="/search" onClick={() => setOpen(false)} className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white/65">Search</Link>
+          </div>
+          <div className="mt-3 flex gap-2 border-t border-white/8 pt-3">
             {session ? (
-              <button type="button" onClick={() => { logout(); setOpen(false) }} className="rounded-[1.25rem] border border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] px-4 py-3 text-left text-sm font-black">
-                Logout
-              </button>
-            ) : null}
+              <>
+                <Link href="/create" onClick={() => setOpen(false)} className="flex-1 rounded-lg bg-[#35858E] px-4 py-2.5 text-center text-sm font-bold text-white">Create</Link>
+                <button type="button" onClick={() => { logout(); setOpen(false) }} className="rounded-lg border border-white/12 px-4 py-2.5 text-sm font-semibold text-white/65">Logout</button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" onClick={() => setOpen(false)} className="flex-1 rounded-lg border border-white/12 px-4 py-2.5 text-center text-sm font-semibold text-white/65">Login</Link>
+                <Link href="/signup" onClick={() => setOpen(false)} className="flex-1 rounded-lg bg-[#35858E] px-4 py-2.5 text-center text-sm font-bold text-white">Sign up</Link>
+              </>
+            )}
           </div>
         </div>
       ) : null}
